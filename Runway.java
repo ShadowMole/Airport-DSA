@@ -10,6 +10,10 @@ public class Runway {
         name = n;
     }
 
+    public void addPlane(Plane p){
+        planes.enqueue(p);
+    }
+
     public String getName() {
         return name;
     }
