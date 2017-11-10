@@ -31,20 +31,20 @@ public class AscendinglyOrderedPlaneList{
         numItems++;
     }
 
-    public int search(int item){
+    public int search(String item){
         int low = 0;
         int high = numItems - 1;
         int index = 0;
         boolean end = false;
         boolean found = false;
         for(int mid = (low + high) / 2; !found && !end; mid = (low + high) / 2){
-            if(item == items[mid].getFlightNumber()){
+            if(item.equals(items[mid].getFlightNumber())){
                 index = mid;
                 found = true;
             }else if(low > high){
                 index = low;
                 end = true;
-            }else if(item < items[mid].getFlightNumber()){
+            }else if(item.compareTo(items[mid].getFlightNumber()) < 0){
                 high = mid - 1;
             }else{
                 low = mid + 1;
@@ -103,9 +103,9 @@ public class AscendinglyOrderedPlaneList{
     }
 
     public String toString(){
-        String info = "List of size " + numItems + " has the following items: \t";
+        String info = "There are  " + numItems + " planes waiting to re-enter runways: \n";
         for(int i = 0; i < numItems; i++){
-            info += items[i] + " ";
+            info += items[i] + "\n";
         }
         return info;
     }

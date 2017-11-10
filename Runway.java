@@ -25,4 +25,12 @@ public class Runway {
     public ResizableArrayQueue<Plane> getPlanes() {
         return planes;
     }
+
+    public Plane takeOff(){
+        return planes.dequeue();
+    }
+
+    public boolean isEmpty(){
+        return planes.isEmpty();
+    }
 }

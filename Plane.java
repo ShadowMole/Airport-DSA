@@ -3,12 +3,14 @@
  */
 public class Plane {
 
-    private int flightnumber;
+    private String flightnumber;
     private String runway;
+    private String destination;
 
-    public Plane(int f, String r){
+    public Plane(String f, String r, String d){
         flightnumber = f;
         runway = r;
+        destination = d;
     }
 
     public String getRunway() {
@@ -19,16 +21,24 @@ public class Plane {
         this.runway = runway;
     }
 
-    public int getFlightNumber() {
+    public String getFlightNumber() {
 
         return flightnumber;
     }
 
-    public void setFlightNumber(int flightnumber) {
+    public void setFlightNumber(String flightnumber) {
         this.flightnumber = flightnumber;
     }
 
     public String toString(){
-        return Integer.toString(flightnumber);
+        return flightnumber + " to " + destination;
+    }
+
+    public String getDestination(){
+        return destination;
+    }
+
+    public void setDestination(String d){
+        destination = d;
     }
 }
