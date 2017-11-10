@@ -75,7 +75,6 @@ public class ResizableArrayQueue<T> implements QueueInterface<T>{
         int index = front;
         for(int i = 0; i < numItems; i++){
             newItems[i] = items[index];
-            index++;
             index = (index + 1) % items.length;
         }
         front = 0;
