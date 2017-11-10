@@ -92,6 +92,10 @@ public class Driver{
         }
         flightNumbers.add(fn);
 
+        System.out.println("Please enter the destination: ");
+        String d = stdin.readLine();
+        System.out.println(d);
+
         System.out.println("Please enter the runway name: ");
         String s = stdin.readLine();
         System.out.println(s);
@@ -100,10 +104,6 @@ public class Driver{
             s = stdin.readLine();
             System.out.println(s);
         }
-
-        System.out.println("Please enter the destination: ");
-        String d = stdin.readLine();
-        System.out.println(d);
 
         boolean found = false;
         for(int i = 0; !found && i < runways.size(); i++){
