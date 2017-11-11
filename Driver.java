@@ -59,7 +59,7 @@ public class Driver{
                 break;
 
             case 5:
-            	runwayClose(runways, runwayNames);
+            	runwayClose(runways, runwayNames, info, hangar, flightNumbers);
                 break;
 
             case 6:
@@ -206,8 +206,7 @@ public class Driver{
     	}    	
     }
     
-    //Not finished yet
-    public static void runwayClose(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames) throws IOException
+    public static void runwayClose(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames,ListArrayBasedPlus<Integer> info, AscendinglyOrderedPlaneList hangar, AscendinglyOrderedStringList flightNumbers) throws IOException
     {
     	if(runways.isEmpty())
     	{
@@ -217,7 +216,6 @@ public class Driver{
     	{
     		boolean succ = true;
         	boolean stop = false;
-        	int size = runways.size();
         	
     		System.out.println("Enter the name of the new runway you want to close: ");
             String r = stdin.readLine();
@@ -228,29 +226,43 @@ public class Driver{
                 System.out.println(r);
             } 
             
-            for(int i = 0; i < size && stop == false; i++)
+            for(int i = 0; i < runways.size() && stop == false; i++)
         	{
-        		if(runways.get(i).equals(r))
+        		if(runways.get(i).getName().equals(r))
         		{
         			stop = true;
-        			succ = true;
-        			
-        			    			   				
+        			succ = true;       			    			   				
         		}
         		else
         		{
         			succ = false;
-        			
         		}
         		    		
         	}
         	if(succ)
         	{
-        		
+        		for(int k = 0; k < runways.size(); k++)
+        		{
+        			System.out.println("Enter runway for plane " + flightNumbers.get(info.get(k)));
+        			String f = stdin.readLine();
+                    System.out.println(f);
+                    if(runwayNames.search(f) >= runwayNames.size())
+                    {
+                    	System.out.println("No such runway!");
+                    }
+                    else if(runwayNames.search(f) < runwayNames.size())
+                    {
+                    	System.out.println("This is the runway that is closing!");
+                    }
+                    else
+                    {
+                    	System.out.println(runways.get(k));
+                    }
+        		}
         	}  
         	else
         	{
-        		
+        		System.out.println("There is no such Runway.");
         	}
 
             
