@@ -55,15 +55,15 @@ public class Driver{
                 break;
 
             case 4:
-
+            	runwayOpen(runways, runwayNames);
                 break;
 
             case 5:
-
+            	runwayClose(runways, runwayNames);
                 break;
 
             case 6:
-
+            	planesWaiting(runways);
                 break;
 
             case 7:
@@ -92,10 +92,6 @@ public class Driver{
         }
         flightNumbers.add(fn);
 
-        System.out.println("Please enter the destination: ");
-        String d = stdin.readLine();
-        System.out.println(d);
-
         System.out.println("Please enter the runway name: ");
         String s = stdin.readLine();
         System.out.println(s);
@@ -104,6 +100,10 @@ public class Driver{
             s = stdin.readLine();
             System.out.println(s);
         }
+
+        System.out.println("Please enter the destination: ");
+        String d = stdin.readLine();
+        System.out.println(d);
 
         boolean found = false;
         for(int i = 0; !found && i < runways.size(); i++){
@@ -185,6 +185,93 @@ public class Driver{
                 }
             }
         }
+    }
+    
+    public static void runwayOpen(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames) throws IOException
+    {
+    	for(int i = 0; i < 1; i++)
+    	{
+    		System.out.println("Enter the name of the new runway you want to open: ");
+            String s = stdin.readLine();
+            System.out.println(s);        
+            
+            while(runwayNames.search(s) < runwayNames.size()){
+                System.out.println("That name is already used. Please enter a new name: ");
+                s = stdin.readLine();
+                System.out.println(s);
+            }
+            runwayNames.add(s);
+            runways.add(runways.size(), new Runway(s));
+            System.out.println("Runway " + s + " is now open.");
+    	}    	
+    }
+    
+    //Not finished yet
+    public static void runwayClose(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames) throws IOException
+    {
+    	if(runways.isEmpty())
+    	{
+    		System.out.println("There are no open runways at the airport.");
+    	}
+    	else
+    	{
+    		boolean succ = true;
+        	boolean stop = false;
+        	int size = runways.size();
+        	
+    		System.out.println("Enter the name of the new runway you want to close: ");
+            String r = stdin.readLine();
+            System.out.println(r);            
+            while(runwayNames.search(r) >= runwayNames.size()){
+                System.out.println("There is no runway by that name at the airport. Please enter a new name: ");
+                r = stdin.readLine();
+                System.out.println(r);
+            } 
+            
+            for(int i = 0; i < size && stop == false; i++)
+        	{
+        		if(runways.get(i).equals(r))
+        		{
+        			stop = true;
+        			succ = true;
+        			
+        			    			   				
+        		}
+        		else
+        		{
+        			succ = false;
+        			
+        		}
+        		    		
+        	}
+        	if(succ)
+        	{
+        		
+        	}  
+        	else
+        	{
+        		
+        	}
+
+            
+    	}
+    }
+    
+    public static void planesWaiting(ListArrayBasedPlus<Runway> runways)
+    {
+    	if(runways.isEmpty())
+    	{
+    		System.out.println("There are no runways at this airport.");
+    	}
+    	else
+    	{
+    		for(int i = 0; i < runways.size(); i++)
+    		{
+    			System.out.println("These planes are waiting for takeoff on runway " + runways.get(i).getName() + ": ");
+    			System.out.println("Flight " + runways.get(i).getPlanes() + ".");
+    			
+    		}
+    	}
     }
 
     public static void printMenu(){

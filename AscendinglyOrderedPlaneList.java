@@ -15,23 +15,18 @@ public class AscendinglyOrderedPlaneList{
     }  // end default constructor
 
     public void add(Plane item){
-        int index;
-        if(numItems == 0){
-            index = 0;
-        }else {
-            if (numItems == items.length) {//fixes implementation error and programming style
-                resize();
-            }
-            index = search(item.getFlightNumber());
-            if (index > numItems) {
-                index -= (2 * numItems);
-            }
-            for (int pos = numItems - 1; pos >= index; pos--)  //textbook code modified to eliminate logic error causing ArrayIndexOutOfBoundsException
-            {
-                items[pos + 1] = items[pos];
-            } // end for
-            // insert new item
+        if (numItems == items.length){//fixes implementation error and programming style
+            resize();
         }
+        int index = search(item.getFlightNumber());
+        if(index > numItems){
+            index -= (2 * numItems);
+        }
+        for (int pos = numItems-1; pos >= index; pos--)  //textbook code modified to eliminate logic error causing ArrayIndexOutOfBoundsException
+        {
+            items[pos+1] = items[pos];
+        } // end for
+        // insert new item
         items[index] = item;
         numItems++;
     }
