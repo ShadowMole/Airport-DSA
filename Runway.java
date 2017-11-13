@@ -37,4 +37,15 @@ public class Runway {
     public Plane reassign(){
         return planes.dequeue();
     }
+
+    public String toString(){
+        String s = "";
+        if(planes.isEmpty()){
+            s += "Runway " + name + " is empty.";
+        }else {
+            s += "Runway " + name + ":\n";
+            s += planes;
+        }
+        return s;
+    }
 }

@@ -295,9 +295,7 @@ public class Driver {
             System.out.println("There are no runways at this airport.");
         } else {
             for (int i = 0; i < runways.size(); i++) {
-                System.out.println("These planes are waiting for takeoff on runway " + runways.get(i).getName() + ": ");
-                System.out.println("Flight " + runways.get(i).getPlanes() + ".");
-
+                System.out.println(runways.get(i) + "\n");
             }
         }
     }
