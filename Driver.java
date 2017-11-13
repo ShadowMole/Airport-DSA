@@ -9,9 +9,9 @@ public class Driver{
         System.out.println(run);
 
         ListArrayBasedPlus<Runway> runways = new ListArrayBasedPlus<>();
-        AscendinglyOrderedStringList runwayNames = new AscendinglyOrderedStringList();
-        AscendinglyOrderedStringList flightNumbers = new AscendinglyOrderedStringList();
-        AscendinglyOrderedPlaneList hangar = new AscendinglyOrderedPlaneList();
+        AscendinglyOrderedList<String> runwayNames = new AscendinglyOrderedList<>();
+        AscendinglyOrderedList<String> flightNumbers = new AscendinglyOrderedList<>();
+        AscendinglyOrderedList<Plane> hangar = new AscendinglyOrderedList<>();
         ListArrayBasedPlus<Integer> info = new ListArrayBasedPlus<>(); //Will be used to hold other information
         info.add(0,0); //Current runway to take off from
         info.add(1,0); //Number of planes that have taken off
@@ -38,7 +38,7 @@ public class Driver{
         }
     }
 
-    public static boolean processCommand(int command, ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames, AscendinglyOrderedStringList flightNumbers, AscendinglyOrderedPlaneList hangar, ListArrayBasedPlus<Integer> info)throws IOException{
+    public static boolean processCommand(int command, ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> runwayNames, AscendinglyOrderedList<String> flightNumbers, AscendinglyOrderedList<Plane> hangar, ListArrayBasedPlus<Integer> info)throws IOException{
         boolean wantToQuit = false;
 
         switch(command){
@@ -81,7 +81,7 @@ public class Driver{
         return wantToQuit;
     }
 
-    public static void newPlane(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedStringList runwayNames, AscendinglyOrderedStringList flightNumbers)throws IOException{
+    public static void newPlane(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> runwayNames, AscendinglyOrderedList<String> flightNumbers)throws IOException{
         System.out.println("Please enter the flight number: ");
         String fn = stdin.readLine();
         System.out.println(fn);
@@ -115,7 +115,7 @@ public class Driver{
         System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
     }
 
-    public static void takeOff(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedPlaneList hangar, ListArrayBasedPlus<Integer> info)throws IOException {
+    public static void takeOff(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<Plane> hangar, ListArrayBasedPlus<Integer> info)throws IOException {
         boolean noPlanes = false;
         int runwayCheck = 0; //Number of Runways Checked
         while (runways.get(info.get(0)).isEmpty() && !noPlanes) {
@@ -154,7 +154,7 @@ public class Driver{
         System.out.println(info.get(1) + " planes have taken off.");
     }
 
-    public static void waitingInfo(AscendinglyOrderedPlaneList hangar){
+    public static void waitingInfo(AscendinglyOrderedList<Plane> hangar){
         if(hangar.isEmpty()){
             System.out.println("There are no planes waiting to re-enter runways.");
         }else {
@@ -162,19 +162,21 @@ public class Driver{
         }
     }
 
-    public static void reEnter(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedPlaneList hangar)throws IOException{
+    public static void reEnter(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<Plane> hangar)throws IOException{
         if(hangar.isEmpty()){
             System.out.println("There are no planes waiting to re-enter runways.");
         }else {
             System.out.println("Please enter the flight number: ");
             String fn = stdin.readLine();
             System.out.println(fn);
-            int index = hangar.search(fn);
+            Plane compare = new Plane(fn, "", "");
+            int index = hangar.search(compare);
             while (index >= hangar.size()) {
                 System.out.println("That flight number is not waiting. Please enter a new flight number: ");
                 fn = stdin.readLine();
                 System.out.println(fn);
-                index = hangar.search(fn);
+                compare = new Plane(fn, "", "");
+                index = hangar.search(compare);
             }
             Plane p = hangar.get(index);
             hangar.remove(index);
