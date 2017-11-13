@@ -33,4 +33,8 @@ public class Runway {
     public boolean isEmpty(){
         return planes.isEmpty();
     }
+
+    public Plane reassign(){
+        return planes.dequeue();
+    }
 }
