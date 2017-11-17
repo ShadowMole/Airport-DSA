@@ -4,6 +4,7 @@ public class Driver {
     public static BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws IOException {
+        long start = System.nanoTime();
         System.out.println("Welcome to the airport simulator!  Please enjoy your time!");
 
         System.out.println("Please enter the number of runways:");
@@ -38,6 +39,9 @@ public class Driver {
             System.out.println(command);
             finished = processCommand(command, runways, runwayNames, flightNumbers, hangar, info);
         }
+        long end = System.nanoTime();
+        long total = end - start;
+        System.out.println("Time: " + total + " nanoseconds.");
     }
 
     public static boolean processCommand(int command, ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> runwayNames, AscendinglyOrderedList<String> flightNumbers, AscendinglyOrderedList<Plane> hangar, ListArrayBasedPlus<Integer> info) throws IOException {
