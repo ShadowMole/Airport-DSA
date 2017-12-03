@@ -31,6 +31,30 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         numItems++;
     }
 
+    public void add(int index, T item)throws  ListIndexOutOfBoundsException{
+        if (numItems == items.length)//fixes implementation error and programming style
+        {
+            resize();
+        }
+        if (index >= 0 && index <= numItems)
+        {
+            // make room for new element by shifting all items at
+            // positions >= index toward the end of the
+            // list (no shift if index == numItems+1)
+            for (int pos = numItems-1; pos >= index; pos--)  //textbook code modified to eliminate logic error causing ArrayIndexOutOfBoundsException
+            {
+                items[pos+1] = items[pos];
+            } // end for
+            // insert new item
+            items[index] = item;
+            numItems++;
+        }
+        else{
+            // index out of range
+            throw new ListIndexOutOfBoundsException("ListIndexOutOfBoundsException on add");
+        }  // end if
+    }
+
     public int search(T item){
         int low = 0;
         int high = numItems - 1;

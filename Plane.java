@@ -4,26 +4,31 @@
 public class Plane implements Comparable<Plane>{
 
     private String flightnumber;
-    private String runway;
+    private int runway;
     private String destination;
+    private int order;
 
-    public Plane(String f, String r, String d){
+    public Plane(String f, int r, String d){
         flightnumber = f;
         runway = r;
         destination = d;
     }
 
-    public String getRunway() {
+    public int getRunway() {
         return runway;
     }
 
-    public void setRunway(String runway) {
+    public void setRunway(int runway) {
         this.runway = runway;
     }
 
     public String getFlightNumber() {
 
         return flightnumber;
+    }
+
+    public void setOrder(int order){
+        this.order = order;
     }
 
     public void setFlightNumber(String flightnumber) {
@@ -44,10 +49,14 @@ public class Plane implements Comparable<Plane>{
 
     @Override
     public int compareTo(Plane p){
-        return flightnumber.compareTo(p.getFlightNumber());
+        return p.getRunway() - runway;
     }
 
     public boolean equals(Plane p){
-        return flightnumber.equals(p.getFlightNumber());
+        return runway == p.getRunway();
+    }
+
+    public int getOrder() {
+        return order;
     }
 }
