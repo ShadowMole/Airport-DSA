@@ -12,23 +12,44 @@
 // *********************************************************
 public class ListArrayBased<T> implements ListInterface<T>{
 
+    /**
+     * Field declaration of the max size of the items array, assigned to the value 3
+     */
     private static final int MAX_LIST = 3;
+    /**
+     * Field declaration of the generic array items
+     */
     protected T[] items;  // an array of list items
+    /**
+     * Field declaration of numItems as an int value
+     */
     protected int numItems;  // number of items in list
 
+    /**
+     * Class constructor, that initializes items to size 3, and numItems to the value 0
+     */
     public ListArrayBased(){
         items = (T[]) new Object[3];
         numItems = 0;
     }  // end default constructor
 
+    /* (non-Javadoc)
+     * @see ListInterface#isEmpty()
+     */
     public boolean isEmpty(){
         return (numItems == 0);
     } // end isEmpty
 
+    /* (non-Javadoc)
+     * @see ListInterface#size()
+     */
     public int size(){
         return numItems;
     }  // end size
 
+    /* (non-Javadoc)
+     * @see ListInterface#removeAll()
+     */
     public void removeAll(){
         // Creates a new array; marks old array for
         // garbage collection.
@@ -36,6 +57,9 @@ public class ListArrayBased<T> implements ListInterface<T>{
         numItems = 0;
     } // end removeAll
 
+    /* (non-Javadoc)
+     * @see ListInterface#add(int, java.lang.Object)
+     */
     public void add(int index, T item)throws  ListIndexOutOfBoundsException{
         if (numItems == items.length)//fixes implementation error and programming style
         {
@@ -60,6 +84,9 @@ public class ListArrayBased<T> implements ListInterface<T>{
         }  // end if
     } //end add
 
+    /* (non-Javadoc)
+     * @see ListInterface#get(int)
+     */
     public T get(int index)throws ListIndexOutOfBoundsException{
         if (index >= 0 && index < numItems){
             return items[index];
@@ -70,6 +97,9 @@ public class ListArrayBased<T> implements ListInterface<T>{
         }  // end if
     } // end get
 
+    /* (non-Javadoc)
+     * @see ListInterface#remove(int)
+     */
     public void remove(int index)throws ListIndexOutOfBoundsException{
         if (index >= 0 && index < numItems){
             // delete item by shifting all items at

@@ -1,7 +1,7 @@
 /**
  * Created by Mole on 11/8/2017.
  */
-public class Plane {
+public class Plane implements Comparable<Plane>{
 
     private String flightnumber;
     private String runway;
@@ -40,5 +40,14 @@ public class Plane {
 
     public void setDestination(String d){
         destination = d;
+    }
+
+    @Override
+    public int compareTo(Plane p){
+        return flightnumber.compareTo(p.getFlightNumber());
+    }
+
+    public boolean equals(Plane p){
+        return flightnumber.equals(p.getFlightNumber());
     }
 }
