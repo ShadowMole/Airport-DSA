@@ -16,6 +16,7 @@ public class Driver {
         info.add(0, 1); //Current runway to take off from
         info.add(1, 0); //Number of planes that have taken off
         info.add(2, 0); //Number of open runways
+        info.add(3, 0); //Number of planes waiting to reenter runways
 
         for (int i = 0; i < run; i++) {
             System.out.println("Please enter the name of runway " + (i + 1) + ": ");
@@ -63,7 +64,7 @@ public class Driver {
                 break;
 
             case 3:
-                reEnter(planes, runways);
+                reEnter(planes, runways, info);
                 break;
 
             case 4:
@@ -74,13 +75,13 @@ public class Driver {
                 runwayClose(planes, runways, info);
                 break;
 
-            /*case 6:
-                planesWaiting(runways);
+            case 6:
+                planesWaiting(planes, runways, info);
                 break;
 
             case 7:
-                waitingInfo(hangar);
-                break;*/
+                waitingInfo(planes, runways, info);
+                break;
 
             case 8:
                 numberTakeOff(info);
@@ -201,6 +202,9 @@ public class Driver {
                     i--;
                 }
                 planes.add(i, p);
+                int temp = info.get(3);
+                info.remove(3);
+                info.add(3, (temp + 1));
             }
             int temp = info.get(0);
             info.remove(0);
@@ -212,15 +216,34 @@ public class Driver {
         System.out.println(info.get(1) + " planes have taken off.");
     }
 
-    /*public static void waitingInfo(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways) {
-        if (hangar.isEmpty()) {
-            System.out.println("There are no planes waiting to re-enter runways.");
+    public static void waitingInfo(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) {
+        if (info.get(3) == 0) {
+            System.out.println("There are no planes waiting to reenter runways.");
         } else {
-            System.out.println(hangar);
+            for (int i = 0; i < runways.size(); i++) {
+                if(runways.get(i).getActive()) {
+                    int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
+                    if(index > planes.size()){
+                        index -= (2 * planes.size());
+                        while(planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
+                            index--;
+                        }
+                        boolean end = false;
+                        while(!end){
+                            if(planes.get(index).getOrder() != 0 && planes.get(index).getRunway() == runways.get(i).getOrder()){
+                                end = true;
+                            }else{
+                                System.out.println(planes.get(index));
+                                index++;
+                            }
+                        }
+                    }
+                }
+            }
         }
-    }*/
+    }
 
-    public static void reEnter(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways) throws IOException {
+    public static void reEnter(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         boolean empty = true;
         for(int i = 0; i < runways.size() && empty; i++){
             if(runways.get(i).getActive()){
@@ -280,6 +303,9 @@ public class Driver {
                 }
             }
             System.out.println("Flight " + p.getFlightNumber() + " has re-entered runway " + runway);
+            int temp = info.get(3);
+            info.remove(3);
+            info.add(3, (temp - 1));
         }
     }
 
@@ -425,15 +451,33 @@ public class Driver {
         }
     }
 
-    /*public static void planesWaiting(ListArrayBasedPlus<Runway> runways) {
-        if (runways.isEmpty()) {
+    public static void planesWaiting(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) {
+        if (info.get(2) == 0) {
             System.out.println("There are no runways at this airport.");
         } else {
             for (int i = 0; i < runways.size(); i++) {
-                System.out.println(runways.get(i) + "\n");
+                if(runways.get(i).getActive()) {
+                    System.out.println(runways.get(i));
+                    int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
+                    if(index > planes.size()){
+                        index -= (2 * planes.size());
+                        while(planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
+                            index--;
+                        }
+                        boolean end = false;
+                        while(!end){
+                            if(planes.get(index).getRunway() != runways.get(i).getOrder()){
+                                end = true;
+                            }else{
+                                System.out.println(planes.get(index));
+                                index++;
+                            }
+                        }
+                    }
+                }
             }
         }
-    }*/
+    }
 
 
     public static void printMenu() {
