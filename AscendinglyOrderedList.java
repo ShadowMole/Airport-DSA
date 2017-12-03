@@ -1,19 +1,28 @@
 
 /**
- * Write a description of class AscendinglyOrderedStringList here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * List implementation that orders the items into ascending order, smallest to largest.
  */
 public class AscendinglyOrderedList <T extends Comparable<T>> implements AscendinglyOrderedListInterface <T>{
 
+    /**
+     * Field declaration of a generic fixed sized array called items
+     */
     T[] items;
+    /**
+     * Field declaration of numItems as an int value
+     */
     int numItems;
 
+    /**
+     * Class constructor that initializes the items array to a size of 3
+     */
     public AscendinglyOrderedList(){
         items = (T[]) new Comparable[3];
     }  // end default constructor
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#add(java.lang.Comparable)
+     */
     public void add(T item){
         if (numItems == items.length){//fixes implementation error and programming style
             resize();
@@ -31,6 +40,13 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         numItems++;
     }
 
+    /**
+     * Add method that adds an item to the items array
+     * 
+     * @param index
+     * @param item
+     * @throws ListIndexOutOfBoundsException
+     */
     public void add(int index, T item)throws  ListIndexOutOfBoundsException{
         if (numItems == items.length)//fixes implementation error and programming style
         {
@@ -55,6 +71,9 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         }  // end if
     }
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#search(java.lang.Comparable)
+     */
     public int search(T item){
         int low = 0;
         int high = numItems - 1;
@@ -81,14 +100,23 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         }
     }
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#isEmpty()
+     */
     public boolean isEmpty(){
         return (numItems == 0);
     } // end isEmpty
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#size()
+     */
     public int size(){
         return numItems;
     }  // end size
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#clear()
+     */
     public void clear(){
         // Creates a new array; marks old array for
         // garbage collection.
@@ -96,6 +124,9 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         numItems = 0;
     } // end removeAll
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#remove(int)
+     */
     public void remove(int index)throws ListIndexOutOfBoundsException{
         if (index >= 0 && index < numItems){
             // delete item by shifting all items at
@@ -115,6 +146,9 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         }  // end if
     } //end remove
 
+    /* (non-Javadoc)
+     * @see AscendinglyOrderedListInterface#get(int)
+     */
     public T get(int index) throws ListIndexOutOfBoundsException{
         if (index >= 0 && index < numItems){
             return items[index];
@@ -126,6 +160,9 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         }  // end if
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString(){
         String info = "List of size " + numItems + " has the following items: \t";
         for(int i = 0; i < numItems; i++){
@@ -134,6 +171,9 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
         return info;
     }
 
+    /**
+     * Resizes the fixed sized array
+     */
     public void resize(){
         T[] newItems = (T[]) new Comparable[items.length * 2];
         for(int i = 0; i < items.length; i++){
