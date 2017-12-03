@@ -170,13 +170,13 @@ public class Driver {
             System.out.println("No plane on any runway!");
         }else {
             int index = planes.search(new Plane("", info.get(0), ""));
-            if (index > planes.size() || !(runways.get(info.get(0))).getActive()) {
+            if (index < 0 || index >=ZZ planes.size() || !(runways.get(info.get(0))).getActive()) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
                 index = planes.search(new Plane("", info.get(0), ""));
             }
-            while (index > planes.size() || !(runways.get(info.get(0))).getActive()) {
+            while (index < 0 || index >= planes.size() || !(runways.get(info.get(0))).getActive()) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
