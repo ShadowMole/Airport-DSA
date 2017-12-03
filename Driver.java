@@ -102,6 +102,7 @@ public class Driver {
      * @param runwayNames
      * @param flightNumbers
      * @throws IOException
+     * @author Steven Bruman
      */
     public static void newPlane(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> runwayNames, AscendinglyOrderedList<String> flightNumbers) throws IOException {
         System.out.println("Please enter the flight number: ");
@@ -144,6 +145,7 @@ public class Driver {
      * @param hangar
      * @param info
      * @throws IOException
+     * @author Steven Bruman
      */
     public static void takeOff(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<Plane> hangar, ListArrayBasedPlus<Integer> info) throws IOException {
         boolean noPlanes = false;
@@ -208,6 +210,7 @@ public class Driver {
      * @param runways
      * @param hangar
      * @throws IOException
+     * @author Steven Bruman
      */
     public static void reEnter(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<Plane> hangar) throws IOException {
         if (hangar.isEmpty()) {
@@ -242,6 +245,7 @@ public class Driver {
      * @param runways
      * @param runwayNames
      * @throws IOException
+     * @author Paul Sigloch
      */
     public static void runwayOpen(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> runwayNames) throws IOException {
         for (int i = 0; i < 1; i++) {
@@ -268,6 +272,7 @@ public class Driver {
      * @param runways
      * @param hangar
      * @throws IOException
+     * @author Paul Sigloch
      */
     public static void runwayClose(ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<Plane> hangar) throws IOException {
         if (runways.isEmpty()) {
@@ -355,6 +360,7 @@ public class Driver {
      * Prints out the number of planes waiting on the runways
      * 
      * @param runways
+     * @author Paul Sigloch
      */
     public static void planesWaiting(ListArrayBasedPlus<Runway> runways) {
         if (runways.isEmpty()) {
