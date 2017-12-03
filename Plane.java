@@ -27,7 +27,7 @@ public class Plane implements Comparable<Plane>{
         return flightnumber;
     }
 
-    public int setOrder(int order){
+    public void setOrder(int order){
         this.order = order;
     }
 

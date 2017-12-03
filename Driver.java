@@ -45,23 +45,23 @@ public class Driver {
             printMenu();
             int command = Integer.parseInt(stdin.readLine());
             System.out.println(command);
-            finished = processCommand(command, planes, runways, flightNumbers, info);
+            finished = processCommand(command, planes, runways, info);
         }
     }
 
-    public static boolean processCommand(int command, AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> flightNumbers, ListArrayBasedPlus<Integer> info) throws IOException {
+    public static boolean processCommand(int command, AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
         boolean wantToQuit = false;
 
         switch (command) {
             case 1:
-                newPlane(planes, runways, flightNumbers);
+                newPlane(planes, runways);
                 break;
 
             case 2:
                 takeOff(planes, runways, info);
                 break;
 
-            case 3:
+           /* case 3:
                 reEnter(runways);
                 break;
 
@@ -83,7 +83,7 @@ public class Driver {
 
             case 8:
                 numberTakeOff(info);
-                break;
+                break;*/
 
             case 9:
                 wantToQuit = true;
@@ -92,7 +92,7 @@ public class Driver {
         return wantToQuit;
     }
 
-    public static void newPlane(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, AscendinglyOrderedList<String> flightNumbers) throws IOException {
+    public static void newPlane(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways) throws IOException {
         System.out.println("Please enter the flight number: ");
         String fn = stdin.readLine();
         System.out.println(fn);
@@ -123,7 +123,7 @@ public class Driver {
         boolean flag = false;
         int order = 0;
         for(int i = 0; i < runways.size() && !flag; i++){
-            if(s.equals(runways.get(i).getName())){
+            if(s.equals(runways.get(i).getName()) && runways.get(i).getActive()){
                 flag = true;
                 order = runways.get(i).getOrder();
             }
@@ -131,10 +131,10 @@ public class Driver {
         while (!flag) {
             s = stdin.readLine();
             System.out.println(s);
-            boolean flag = false;
+            boolean sFlag = false;
             for(int i = 0; i < runways.size() && !flag; i++){
-                if(s.equals(runways.get(i).getName())){
-                    flag = true;
+                if(s.equals(runways.get(i).getName()) && runways.get(i).getActive()){
+                    sFlag = true;
                     order = runways.get(i).getOrder();
                 }
             }
@@ -157,45 +157,49 @@ public class Driver {
     }
 
     public static void takeOff(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
-        boolean noPlanes = false;
-        int runwayCheck = 0; //Number of Runways Checked
+        int init = info.get(0); //Number of Runways Checked
+
         int index = planes.search(new Plane("", info.get(0), ""));
-        if(index <= planes.size()) {
+        if(index <= planes.size() || !(runways.get(info.get(0))).getActive()) {
             int temp = info.get(0);
             info.remove(0);
             info.add(0, (temp + 1) % runways.size());
-            runwayCheck++;
-            if (runwayCheck == runways.size() && runways.get(info.get(0)).isEmpty()) {  //If we have checked all runways and no planes were found
-                noPlanes = true;
-            }
             index = planes.search(new Plane("", info.get(0), ""));
         }
-        while (index <= planes.size() && !noPlanes) {
+        while ((index <= planes.size() || !(runways.get(info.get(0))).getActive()) && !(init == info.get(0))) {
             int temp = info.get(0);
             info.remove(0);
             info.add(0, (temp + 1) % runways.size());
-            runwayCheck++;
-            if (runwayCheck == runways.size() && runways.get(info.get(0)).isEmpty()) {  //If we have checked all runways and no planes were found
-                noPlanes = true;
-            }
             index = planes.search(new Plane("", info.get(0), ""));
         }
-        if (noPlanes) {
+        if (init == info.get(0)) {
             System.out.println("No plane on any runway!");
         } else {
-            Plane p = runways.get(info.get(0)).takeOff();
+            index -= (2 * planes.size());
+            Plane p = planes.get(index);
+            planes.remove(index);
             System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
             String s = stdin.readLine();
             System.out.println(s);
-
+            p.setOrder(0);
             if (s.equals("Y")) {
                 System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
                 int temp = info.get(1);
                 info.remove(1);
                 info.add(1, (temp + 1));
+                p.setRunway(0);
+                planes.add(p);
             } else {
-                hangar.add(p);
                 System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
+                int newIndex = planes.search(p);
+                if(index > planes.size()) {
+                    newIndex -= (2 * planes.size());
+                }
+                int i = index;
+                while(i > 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() > 0) {
+                    i--;
+                }
+                planes.add(i, p);
             }
             int temp = info.get(0);
             info.remove(0);
@@ -203,7 +207,7 @@ public class Driver {
         }
     }
 
-    public static void numberTakeOff(ListArrayBasedPlus<Integer> info) {
+    /*public static void numberTakeOff(ListArrayBasedPlus<Integer> info) {
         System.out.println(info.get(1) + " planes have taken off.");
     }
 
@@ -349,7 +353,7 @@ public class Driver {
                 System.out.println(runways.get(i) + "\n");
             }
         }
-    }
+    }*/
 
 
     public static void printMenu() {
