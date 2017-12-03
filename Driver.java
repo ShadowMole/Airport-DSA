@@ -1,8 +1,17 @@
 import java.io.*;
 
 public class Driver {
+    /**
+     * Buffered Reader used for the user input in the menu and each case in the menu
+     */
     public static BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
+    /**
+     * Main method that runs the driver
+     * 
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to the airport simulator!  Please enjoy your time!");
 
@@ -56,6 +65,18 @@ public class Driver {
         }
     }
 
+    /**
+     * Breaks out of the switch when case 9 is selected.
+     * 
+     * @param command
+     * @param planes
+     * @param runways
+     * @param info
+     * @return boolean
+     * true will break out of the switch
+     * 
+     * @throws IOException
+     */
     public static boolean processCommand(int command, AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
         boolean wantToQuit = false;
 
@@ -99,6 +120,14 @@ public class Driver {
         return wantToQuit;
     }
 
+    /**
+     * Adds a new plane to a specified runway.
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     * @throws IOException
+     */
     public static void newPlane(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         System.out.println("Please enter the flight number: ");
         String fn = stdin.readLine();
@@ -165,6 +194,17 @@ public class Driver {
         System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
     }
 
+    /**
+     * Removes a plane from the AscendinglyOrderedList<Plane> planes if the plane has clearance to take off
+     * User will decide if the plane at the top top the list has clearance to take off
+     * If the plane doesn't have clearance to take off the plane is then sent to the hangar to await reentery of the runway
+     * 
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     * @throws IOException
+     */
     public static void takeOff(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
         if(info.get(4) == 0){
             System.out.println("No plane on any runway!");
@@ -219,10 +259,22 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays how many planes have take off at the airport
+     * 
+     * @param info
+     */
     public static void numberTakeOff(ListArrayBasedPlus<Integer> info) {
         System.out.println(info.get(1) + " planes have taken off.");
     }
 
+    /**
+     * Prints out any planes that are waiting to reenter a runway if they were denied take off clearance
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     */
     public static void waitingInfo(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) {
         if (info.get(3) == 0) {
             System.out.println("There are no planes waiting to reenter runways.");
@@ -249,6 +301,14 @@ public class Driver {
         }
     }
 
+    /**
+     * Allows a plane to reenter a runway if the plane was denied take off clearance earlier
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     * @throws IOException
+     */
     public static void reEnter(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         if(info.get(3) == 0){
             System.out.println("There are no planes waiting to re-enter runways.");
@@ -300,6 +360,14 @@ public class Driver {
         }
     }
 
+    /**
+     * Adds a new runway to the airport with a unique name
+     * Will not be added if there is already a runway with the same name
+     * 
+     * @param runways
+     * @param info
+     * @throws IOException
+     */
     public static void runwayOpen(ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
             System.out.println("Enter the name of the new runway you want to open: ");
             String s = stdin.readLine();
@@ -328,6 +396,16 @@ public class Driver {
         info.add(2, temp + 1);
 }
 
+    /**
+     * Removes a runway that is currently open.
+     * If there is a plane that is on the closing runway, that plane will need to be moved to another runway.
+     * If there are planes in the hangar waiting to take off on the runway that is closing, then those planes will need to be moved to another runway's hangar
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     * @throws IOException
+     */
     public static void runwayClose(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         if (info.get(2) == 0) {
                 System.out.println("There are no open runways at the airport.");
@@ -441,6 +519,13 @@ public class Driver {
         }
     }
 
+    /**
+     * Prints out the planes that are waiting to take off from a runway
+     * 
+     * @param planes
+     * @param runways
+     * @param info
+     */
     public static void planesWaiting(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) {
         if (info.get(2) == 0 || planes.isEmpty()) {
             System.out.println("There are no planes waiting to take off at this airport.");
@@ -468,6 +553,9 @@ public class Driver {
         }
     }
 
+    /**
+     * Prints out the menu
+     */
     public static void printMenu() {
         System.out.println("Select from the following options: \n\t1. Plane enters the system.\n\t2. Plane takes off.\n\t3. Plane is allowed to re-enter a runway.\n\t4. Runway opens.\n\t5. Runway closes.\n\t6. Display info about planes waiting to take off.\n\t7. Display info about planes waiting to be allowed to re-enter a runway.\n\t8. Display number of planes who have taken off.\n\t9. End the program.");
     }

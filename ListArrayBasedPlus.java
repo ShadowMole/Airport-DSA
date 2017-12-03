@@ -15,12 +15,8 @@ public class ListArrayBasedPlus<T> extends ListArrayBased<T>{
     public ListArrayBasedPlus(){
         super();
     }
-
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y
+    /* (non-Javadoc)
+     * @see ListArrayBased#add(int, java.lang.Object)
      */
     public void add(int index, T item)throws  ListIndexOutOfBoundsException{
         if (numItems == items.length)//fixes implementation error and programming style
@@ -30,6 +26,9 @@ public class ListArrayBasedPlus<T> extends ListArrayBased<T>{
         super.add(index, item);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString(){
         String info = "List of size " + numItems + " has the following items: \t";
         for(int i = 0; i < numItems; i++){
@@ -38,6 +37,9 @@ public class ListArrayBasedPlus<T> extends ListArrayBased<T>{
         return info;
     }
 
+    /**
+     * Resizes the fixed sized array items
+     */
     public void resize(){
         T[] newItems = (T[]) new Object[items.length * 2];
         for(int i = 0; i < items.length; i++){
