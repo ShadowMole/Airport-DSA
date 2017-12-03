@@ -65,11 +65,11 @@ public class Driver {
                 reEnter(planes, runways);
                 break;
 
-            /*case 4:
+            case 4:
                 runwayOpen(runways);
                 break;
 
-            case 5:
+            /*case 5:
                 runwayClose(runways);
                 break;
 
@@ -282,24 +282,32 @@ public class Driver {
         }
     }
 
-    /*public static void runwayOpen(ListArrayBasedPlus<Runway> runways) throws IOException {
-        for (int i = 0; i < 1; i++) {
+    public static void runwayOpen(ListArrayBasedPlus<Runway> runways) throws IOException {
             System.out.println("Enter the name of the new runway you want to open: ");
             String s = stdin.readLine();
             System.out.println(s);
-
-            while (runwayNames.search(s) < runwayNames.size()) {
+            boolean exists = false;
+            for(int j = 0; j < runways.size() && !exists; j++){
+                if(runways.get(j).getName().equals(s)){
+                    exists = true;
+                }
+            }
+            while (exists) {
                 System.out.println("That name is already used. Please enter a new name: ");
                 s = stdin.readLine();
                 System.out.println(s);
+                exists = false;
+                for(int i = 0; i < runways.size() && !exists; i++){
+                    if(runways.get(i).getName().equals(s)){
+                        exists = true;
+                    }
+                }
             }
-            runwayNames.add(s);
-            runways.add(runways.size(), new Runway(s));
+            runways.add(runways.size(), new Runway(s, runways.size() - 1));
             System.out.println("Runway " + s + " is now open.");
-        }
     }
 
-    public static void runwayClose(ListArrayBasedPlus<Runway> runways) throws IOException {
+    /*public static void runwayClose(ListArrayBasedPlus<Runway> runways) throws IOException {
         if (runways.isEmpty()) {
             System.out.println("There are no open runways at the airport.");
         } else {
