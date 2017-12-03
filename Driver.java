@@ -17,6 +17,8 @@ public class Driver {
         info.add(1, 0); //Number of planes that have taken off
         info.add(2, 0); //Number of open runways
         info.add(3, 0); //Number of planes waiting to reenter runways
+        info.add(4, 0); //Number of planes waiting to take off
+
 
         for (int i = 0; i < run; i++) {
             System.out.println("Please enter the name of runway " + (i + 1) + ": ");
@@ -59,7 +61,7 @@ public class Driver {
 
         switch (command) {
             case 1:
-                newPlane(planes, runways);
+                newPlane(planes, runways, info);
                 break;
 
             case 2:
@@ -97,7 +99,7 @@ public class Driver {
         return wantToQuit;
     }
 
-    public static void newPlane(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways) throws IOException {
+    public static void newPlane(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         System.out.println("Please enter the flight number: ");
         String fn = stdin.readLine();
         System.out.println(fn);
@@ -147,7 +149,7 @@ public class Driver {
 
         Plane p = new Plane(fn, order, d);
 
-        int index = planes.search(p) - (2 * planes.size());
+        int index = planes.search(p);
 
         boolean sFlag = false;
         for(int i = index; i < planes.size() && !sFlag; i++) {
@@ -157,61 +159,63 @@ public class Driver {
                 p.setOrder(planes.get(i - 1).getOrder() + 1);
             }
         }
-
+        int temp = info.get(4);
+        info.remove(4);
+        info.add(4, (temp + 1));
         System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
     }
 
     public static void takeOff(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
-        int init = info.get(0); //Number of Runways Checked
-
-        int index = planes.search(new Plane("", info.get(0), ""));
-        if(index <= planes.size() || !(runways.get(info.get(0))).getActive()) {
-            int temp = info.get(0);
-            info.remove(0);
-            info.add(0, (temp + 1) % runways.size());
-            index = planes.search(new Plane("", info.get(0), ""));
-        }
-        while ((index <= planes.size() || !(runways.get(info.get(0))).getActive()) && !(init == info.get(0))) {
-            int temp = info.get(0);
-            info.remove(0);
-            info.add(0, (temp + 1) % runways.size());
-            index = planes.search(new Plane("", info.get(0), ""));
-        }
-        if (init == info.get(0)) {
+        if(info.get(4) == 0){
             System.out.println("No plane on any runway!");
-        } else {
-            index -= (2 * planes.size());
-            Plane p = planes.get(index);
-            planes.remove(index);
-            System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
-            String s = stdin.readLine();
-            System.out.println(s);
-            p.setOrder(0);
-            if (s.equals("Y")) {
-                System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
-                int temp = info.get(1);
-                info.remove(1);
-                info.add(1, (temp + 1));
-                p.setRunway(0);
-                planes.add(p);
-            } else {
-                System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
-                int newIndex = planes.search(p);
-                if(index > planes.size()) {
-                    newIndex -= (2 * planes.size());
-                }
-                int i = index;
-                while(i > 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() > 0) {
-                    i--;
-                }
-                planes.add(i, p);
-                int temp = info.get(3);
-                info.remove(3);
-                info.add(3, (temp + 1));
+        }else {
+            int index = planes.search(new Plane("", info.get(0), ""));
+            if (index > planes.size() || !(runways.get(info.get(0))).getActive()) {
+                int temp = info.get(0);
+                info.remove(0);
+                info.add(0, (temp + 1) % runways.size());
+                index = planes.search(new Plane("", info.get(0), ""));
             }
-            int temp = info.get(0);
-            info.remove(0);
-            info.add(0, (temp + 1) % runways.size());
+            while (index > planes.size() || !(runways.get(info.get(0))).getActive()) {
+                int temp = info.get(0);
+                info.remove(0);
+                info.add(0, (temp + 1) % runways.size());
+                index = planes.search(new Plane("", info.get(0), ""));
+            }
+                Plane p = planes.get(index);
+                planes.remove(index);
+                System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
+                String s = stdin.readLine();
+                System.out.println(s);
+                p.setOrder(0);
+                if (s.equals("Y")) {
+                    System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
+                    int temp = info.get(1);
+                    info.remove(1);
+                    info.add(1, (temp + 1));
+                    p.setRunway(0);
+                    planes.add(p);
+                } else {
+                    System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
+                    int newIndex = planes.search(p);
+                    if (index > planes.size()) {
+                        newIndex -= (2 * planes.size());
+                    }
+                    int i = newIndex;
+                    while (i > 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() > 0) {
+                        i--;
+                    }
+                    planes.add(i, p);
+                    int temp = info.get(3);
+                    info.remove(3);
+                    info.add(3, (temp + 1));
+                }
+                int temp = info.get(0);
+                info.remove(0);
+                info.add(0, (temp + 1) % runways.size());
+            temp = info.get(4);
+            info.remove(4);
+            info.add(4, (temp - 1));
         }
     }
 
@@ -226,8 +230,7 @@ public class Driver {
             for (int i = 0; i < runways.size(); i++) {
                 if(runways.get(i).getActive()) {
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index > planes.size()){
-                        index -= (2 * planes.size());
+                    if(index <= planes.size()){
                         while(planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
                             index--;
                         }
@@ -354,8 +357,7 @@ public class Driver {
                     }
                 }
             int index = planes.search(new Plane("", run, ""));
-            if(index > planes.size()){
-                index -= (2 * planes.size());
+            if(index <= planes.size()){
                 boolean beginning = false;
                 while(!beginning){
                     if(planes.get(index - 1).getRunway() !=  run){
@@ -398,9 +400,8 @@ public class Driver {
                         }
                         p.setRunway(srun);
                         newIndex = planes.search(p);
-                        if (newIndex > planes.size()) {
+                        if (newIndex <= planes.size()) {
                             boolean place = false;
-                            newIndex -= (2 * planes.size());
                             if (p.getOrder() == 0){
                                 while(!place){
                                     if(planes.get(newIndex).getOrder() != 0 && planes.get(newIndex).getRunway() == run){
@@ -425,6 +426,7 @@ public class Driver {
                             if(p.getOrder() != 0){
                                 p.setOrder(1);
                             }
+                            newIndex -= (2 * planes.size());
                             planes.add(newIndex, p);
                         }
                         if(newIndex < index) {
@@ -440,16 +442,15 @@ public class Driver {
     }
 
     public static void planesWaiting(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) {
-        if (info.get(2) == 0) {
-            System.out.println("There are no runways at this airport.");
-        } else {
+        if (info.get(2) == 0 || planes.isEmpty()) {
+            System.out.println("There are no planes waiting to take off at this airport.");
+        }else{
             for (int i = 0; i < runways.size(); i++) {
                 if(runways.get(i).getActive()) {
                     System.out.println(runways.get(i));
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index > planes.size()){
-                        index -= (2 * planes.size());
-                        while(planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
+                    if(index <= planes.size()){
+                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
                             index--;
                         }
                         boolean end = false;
@@ -466,7 +467,6 @@ public class Driver {
             }
         }
     }
-
 
     public static void printMenu() {
         System.out.println("Select from the following options: \n\t1. Plane enters the system.\n\t2. Plane takes off.\n\t3. Plane is allowed to re-enter a runway.\n\t4. Runway opens.\n\t5. Runway closes.\n\t6. Display info about planes waiting to take off.\n\t7. Display info about planes waiting to be allowed to re-enter a runway.\n\t8. Display number of planes who have taken off.\n\t9. End the program.");
