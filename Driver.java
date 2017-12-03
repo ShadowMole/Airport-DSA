@@ -61,11 +61,11 @@ public class Driver {
                 takeOff(planes, runways, info);
                 break;
 
-           /* case 3:
-                reEnter(runways);
+            case 3:
+                reEnter(planes, runways);
                 break;
 
-            case 4:
+            /*case 4:
                 runwayOpen(runways);
                 break;
 
@@ -79,11 +79,11 @@ public class Driver {
 
             case 7:
                 waitingInfo(hangar);
-                break;
+                break;*/
 
             case 8:
                 numberTakeOff(info);
-                break;*/
+                break;
 
             case 9:
                 wantToQuit = true;
@@ -207,46 +207,82 @@ public class Driver {
         }
     }
 
-    /*public static void numberTakeOff(ListArrayBasedPlus<Integer> info) {
+    public static void numberTakeOff(ListArrayBasedPlus<Integer> info) {
         System.out.println(info.get(1) + " planes have taken off.");
     }
 
-    public static void waitingInfo(AscendinglyOrderedList<Plane> hangar) {
+    /*public static void waitingInfo(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways) {
         if (hangar.isEmpty()) {
             System.out.println("There are no planes waiting to re-enter runways.");
         } else {
             System.out.println(hangar);
         }
-    }
+    }*/
 
-    public static void reEnter(ListArrayBasedPlus<Runway> runways) throws IOException {
-        if (hangar.isEmpty()) {
+    public static void reEnter(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways) throws IOException {
+        boolean empty = true;
+        for(int i = 0; i < runways.size() && empty; i++){
+            if(runways.get(i).getActive()){
+                boolean found = false;
+                int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
+                if(index > planes.size()){
+                    index -= (2 * planes.size());
+                    for(; index > 0 && empty && planes.get(index).getRunway() == runways.get(i).getOrder(); index--){
+                        if(planes.get(index).getOrder() == 0){
+                            empty = false;
+                        }
+                    }
+                }
+            }
+        }
+        if(empty){
             System.out.println("There are no planes waiting to re-enter runways.");
         } else {
             System.out.println("Please enter the flight number: ");
             String fn = stdin.readLine();
             System.out.println(fn);
-            Plane compare = new Plane(fn, "", "");
-            int index = hangar.search(compare);
-            while (index >= hangar.size()) {
+            int index = -1;
+            for(int i = 0; i < planes.size(); i++){
+                if(planes.get(i).getFlightNumber().equals(fn) && planes.get(i).getRunway() != 0 && planes.get(i).getOrder() == 0){
+                    index = i;
+                }
+            }
+            while (index == -1) {
                 System.out.println("That flight number is not waiting. Please enter a new flight number: ");
                 fn = stdin.readLine();
                 System.out.println(fn);
-                compare = new Plane(fn, "", "");
-                index = hangar.search(compare);
-            }
-            Plane p = hangar.get(index);
-            hangar.remove(index);
-            for (int i = 0; i < runways.size(); i++) {
-                if (runways.get(i).getName().equals(p.getRunway())) {
-                    runways.get(i).addPlane(p);
-                    System.out.println("Flight " + p.getFlightNumber() + " has re-entered runway " + runways.get(i).getName());
+                for(int i = 0; i < planes.size(); i++){
+                    if(planes.get(i).getFlightNumber().equals(fn) && planes.get(i).getRunway() != 0 && planes.get(i).getOrder() == 0){
+                        index = i;
+                    }
                 }
             }
+            Plane p = planes.get(index);
+            planes.remove(index);
+            int i = index;
+            while(i < runways.size() && planes.get(i).getRunway() != p.getRunway()) {
+                i++;
+            }
+            planes.add(i, p);
+            if(planes.get(i - 1).getRunway() == p.getRunway()){
+                p.setOrder(planes.get(i- 1).getOrder() + 1);
+            }else{
+                p.setOrder(1);
+
+            }
+            String runway = "";
+            boolean end = false;
+            for(int j = 0; !end; j++){
+                if(runways.get(i).getOrder() == p.getRunway()){
+                    runway = runways.get(i).getName();
+                    end = true;
+                }
+            }
+            System.out.println("Flight " + p.getFlightNumber() + " has re-entered runway " + runway);
         }
     }
 
-    public static void runwayOpen(ListArrayBasedPlus<Runway> runways) throws IOException {
+    /*public static void runwayOpen(ListArrayBasedPlus<Runway> runways) throws IOException {
         for (int i = 0; i < 1; i++) {
             System.out.println("Enter the name of the new runway you want to open: ");
             String s = stdin.readLine();
