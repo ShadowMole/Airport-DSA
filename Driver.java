@@ -40,6 +40,9 @@ public class Driver {
                 }
             }
             runways.add(runways.size(), new Runway(s, runways.size() + 1));
+            int temp = info.get(2);
+            info.remove(2);
+            info.add(2, temp + 1);
         }
 
         boolean finished = false;
@@ -131,12 +134,12 @@ public class Driver {
             }
         }
         while (!flag) {
+            System.out.println("That runway does not exist. Please enter a new runway name: ");
             s = stdin.readLine();
             System.out.println(s);
-            boolean sFlag = false;
             for(int i = 0; i < runways.size() && !flag; i++){
                 if(s.equals(runways.get(i).getName()) && runways.get(i).getActive()){
-                    sFlag = true;
+                    flag = true;
                     order = runways.get(i).getOrder();
                 }
             }
@@ -244,22 +247,7 @@ public class Driver {
     }
 
     public static void reEnter(AscendinglyOrderedList<Plane> planes, ListArrayBased<Runway> runways, ListArrayBased<Integer> info) throws IOException {
-        boolean empty = true;
-        for(int i = 0; i < runways.size() && empty; i++){
-            if(runways.get(i).getActive()){
-                boolean found = false;
-                int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                if(index > planes.size()){
-                    index -= (2 * planes.size());
-                    for(; index > 0 && empty && planes.get(index).getRunway() == runways.get(i).getOrder(); index--){
-                        if(planes.get(index).getOrder() == 0){
-                            empty = false;
-                        }
-                    }
-                }
-            }
-        }
-        if(empty){
+        if(info.get(3) == 0){
             System.out.println("There are no planes waiting to re-enter runways.");
         } else {
             System.out.println("Please enter the flight number: ");
@@ -334,7 +322,7 @@ public class Driver {
             System.out.println("Runway " + s + " is now open.");
         int temp = info.get(2);
         info.remove(2);
-        info.add(0, temp + 1);
+        info.add(2, temp + 1);
 }
 
     public static void runwayClose(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
@@ -447,7 +435,7 @@ public class Driver {
             }
             int temp = info.get(2);
             info.remove(2);
-            info.add(0, temp - 1);
+            info.add(2, temp - 1);
         }
     }
 
