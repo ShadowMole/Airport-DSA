@@ -204,38 +204,41 @@ public class Driver {
                 index = planes.search(new Plane("", info.get(0), ""));
                 System.out.println("While 1" + index);
             }
-                Plane p = planes.get(index);
-                planes.remove(index);
-                System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
-                String s = stdin.readLine();
-                System.out.println(s);
-                p.setOrder(0);
-                if (s.equals("Y")) {
-                    System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
-                    int temp = info.get(1);
-                    info.remove(1);
-                    info.add(1, (temp + 1));
-                    p.setRunway(0);
-                    planes.add(p);
-                } else {
-                    System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
-                    int newIndex = planes.search(p);
-                    if (newIndex >= planes.size()) {
-                        newIndex -= (2 * planes.size());
-                    }
-                    int i = newIndex;
-                    while (i >= 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() != 0) {
-                        i--;
-                        System.out.println("While 2" + i);
-                    }
-                    planes.add(i + 1, p);
-                    int temp = info.get(3);
-                    info.remove(3);
-                    info.add(3, (temp + 1));
+            Plane p = planes.get(index);
+            planes.remove(index);
+            System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
+            String s = stdin.readLine();
+            System.out.println(s);
+            p.setOrder(0);
+            if (s.equals("Y")) {
+                System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
+                int temp = info.get(1);
+                info.remove(1);
+                info.add(1, (temp + 1));
+                p.setRunway(0);
+                planes.add(0,p);
+            } else {
+                System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
+                int newIndex = planes.search(p);
+                System.out.println("While 2" + newIndex);
+                if (newIndex >= planes.size()) {
+                    newIndex -= (2 * planes.size());
+                    newIndex--;
                 }
-                int temp = info.get(0);
-                info.remove(0);
-                info.add(0, (temp + 1) % runways.size());
+                System.out.println("While 2" + newIndex);
+
+                while (newIndex >= 0 && planes.get(newIndex).getRunway() == p.getRunway() && planes.get(newIndex).getOrder() != 0) {
+                    newIndex--;
+                    System.out.println("While 2" + newIndex);
+                }
+                planes.add(newIndex + 1, p);
+                int temp = info.get(3);
+                info.remove(3);
+                info.add(3, (temp + 1));
+            }
+            int temp = info.get(0);
+            info.remove(0);
+            info.add(0, (temp + 1) % runways.size());
             temp = info.get(4);
             info.remove(4);
             info.add(4, (temp - 1));
@@ -298,7 +301,7 @@ public class Driver {
             Plane p = planes.get(index);
             planes.remove(index);
             int i = index;
-            while(i < runways.size() && planes.get(i).getRunway() != p.getRunway()) {
+            while(i < runways.size() && planes.get(i).getRunway() == p.getRunway()) {
                 i++;
             }
             planes.add(i, p);
@@ -311,8 +314,8 @@ public class Driver {
             String runway = "";
             boolean end = false;
             for(int j = 0; !end; j++){
-                if(runways.get(i).getOrder() == p.getRunway()){
-                    runway = runways.get(i).getName();
+                if(runways.get(j).getOrder() == p.getRunway()){
+                    runway = runways.get(j).getName();
                     end = true;
                 }
             }
@@ -324,28 +327,28 @@ public class Driver {
     }
 
     public static void runwayOpen(ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
-            System.out.println("Enter the name of the new runway you want to open: ");
-            String s = stdin.readLine();
+        System.out.println("Enter the name of the new runway you want to open: ");
+        String s = stdin.readLine();
+        System.out.println(s);
+        boolean exists = false;
+        for(int j = 0; j < runways.size() && !exists; j++){
+            if(runways.get(j).getName().equals(s)){
+                exists = true;
+            }
+        }
+        while (exists) {
+            System.out.println("That name is already used. Please enter a new name: ");
+            s = stdin.readLine();
             System.out.println(s);
-            boolean exists = false;
-            for(int j = 0; j < runways.size() && !exists; j++){
-                if(runways.get(j).getName().equals(s)){
+            exists = false;
+            for(int i = 0; i < runways.size() && !exists; i++){
+                if(runways.get(i).getName().equals(s)){
                     exists = true;
                 }
             }
-            while (exists) {
-                System.out.println("That name is already used. Please enter a new name: ");
-                s = stdin.readLine();
-                System.out.println(s);
-                exists = false;
-                for(int i = 0; i < runways.size() && !exists; i++){
-                    if(runways.get(i).getName().equals(s)){
-                        exists = true;
-                    }
-                }
-            }
-            runways.add(runways.size(), new Runway(s, runways.size() - 1));
-            System.out.println("Runway " + s + " is now open.");
+        }
+        runways.add(runways.size(), new Runway(s, runways.get(runways.size() - 1).getOrder() + 1));
+        System.out.println("Runway " + s + " is now open.");
         int temp = info.get(2);
         info.remove(2);
         info.add(2, temp + 1);
@@ -473,15 +476,17 @@ public class Driver {
                     System.out.println(runways.get(i));
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
                     if(index < planes.size()){
-                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
+                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() > 0){
                             index--;
                         }
                         boolean end = false;
                         while(!end && index < planes.size()){
                             if(planes.get(index).getRunway() != runways.get(i).getOrder()){
                                 end = true;
-                            }else{
+                            }else if(planes.get(index).getOrder() != 0){
                                 System.out.println(planes.get(index));
+                                index++;
+                            }else{
                                 index++;
                             }
                         }
