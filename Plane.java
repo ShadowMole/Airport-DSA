@@ -52,8 +52,22 @@ public class Plane implements Comparable<Plane>{
         return p.getRunway() - runway;
     }
 
-    public boolean equals(Plane p){
-        return runway == p.getRunway();
+    @Override
+    public boolean equals(Object o){
+        if(o == this){
+            return true;
+        }
+
+        if(!(o instanceof Plane)){
+            return false;
+        }
+
+        Plane p = (Plane) o;
+        if(runway == p.getRunway()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public int getOrder() {

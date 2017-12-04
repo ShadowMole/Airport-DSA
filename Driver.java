@@ -148,21 +148,42 @@ public class Driver {
         }
 
         Plane p = new Plane(fn, order, d);
-
-        int index = planes.search(p);
-
-        boolean sFlag = false;
-        for(int i = index; i < planes.size() && !sFlag; i++) {
-            if(p.getRunway() == planes.get(i).getRunway()){
-            }else{
-                planes.add(i, p);
-                p.setOrder(planes.get(i - 1).getOrder() + 1);
+        if(planes.isEmpty()){
+            planes.add(0, p);
+            p.setOrder(1);
+            System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+        }else {
+            int index = planes.search(p);
+            if (index >= planes.size()) {
+                index -= (2 * planes.size());
+                planes.add(index, p);
+                p.setOrder(1);
+                System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+            } else {
+                boolean sFlag = false;
+                for (int i = index; i < planes.size() && !sFlag; i++) {
+                    if (p.getRunway() == planes.get(i).getRunway()) {
+                    } else {
+                        planes.add(i, p);
+                        if (i == 0 || planes.get(i - 1).getOrder() == 0 || planes.get(i - 1).getRunway() != p.getRunway()) {
+                            p.setOrder(1);
+                        } else {
+                            p.setOrder(planes.get(i - 1).getOrder() + 1);
+                        }
+                        sFlag = true;
+                        System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+                    }
+                }
+                if(!sFlag){
+                    p.setOrder(planes.get(planes.size() - 1).getOrder() + 1);
+                    planes.add(planes.size(), p);
+                    System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+                }
             }
         }
         int temp = info.get(4);
         info.remove(4);
         info.add(4, (temp + 1));
-        System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
     }
 
     public static void takeOff(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
@@ -170,7 +191,7 @@ public class Driver {
             System.out.println("No plane on any runway!");
         }else {
             int index = planes.search(new Plane("", info.get(0), ""));
-            if (index < 0 || index >=ZZ planes.size() || !(runways.get(info.get(0))).getActive()) {
+            if (index < 0 || index >= planes.size() || !(runways.get(info.get(0))).getActive()) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
@@ -181,6 +202,7 @@ public class Driver {
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
                 index = planes.search(new Plane("", info.get(0), ""));
+                System.out.println("While 1" + index);
             }
                 Plane p = planes.get(index);
                 planes.remove(index);
@@ -198,14 +220,15 @@ public class Driver {
                 } else {
                     System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
                     int newIndex = planes.search(p);
-                    if (index > planes.size()) {
+                    if (newIndex >= planes.size()) {
                         newIndex -= (2 * planes.size());
                     }
                     int i = newIndex;
-                    while (i > 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() > 0) {
+                    while (i >= 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() != 0) {
                         i--;
+                        System.out.println("While 2" + i);
                     }
-                    planes.add(i, p);
+                    planes.add(i + 1, p);
                     int temp = info.get(3);
                     info.remove(3);
                     info.add(3, (temp + 1));
@@ -230,13 +253,13 @@ public class Driver {
             for (int i = 0; i < runways.size(); i++) {
                 if(runways.get(i).getActive()) {
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index <= planes.size()){
-                        while(planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
+                    if(index < planes.size()){
+                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
                             index--;
                         }
                         boolean end = false;
                         while(!end){
-                            if(planes.get(index).getOrder() != 0 && planes.get(index).getRunway() == runways.get(i).getOrder()){
+                            if(index >= planes.size() || planes.get(index).getOrder() != 0 || planes.get(index).getRunway() != runways.get(i).getOrder()){
                                 end = true;
                             }else{
                                 System.out.println(planes.get(index));
@@ -449,12 +472,12 @@ public class Driver {
                 if(runways.get(i).getActive()) {
                     System.out.println(runways.get(i));
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index <= planes.size()){
+                    if(index < planes.size()){
                         while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
                             index--;
                         }
                         boolean end = false;
-                        while(!end){
+                        while(!end && index < planes.size()){
                             if(planes.get(index).getRunway() != runways.get(i).getOrder()){
                                 end = true;
                             }else{
