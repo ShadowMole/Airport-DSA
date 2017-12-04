@@ -1,17 +1,8 @@
 import java.io.*;
 
 public class Driver {
-    /**
-     * Buffered Reader used for the user input in the menu and each case in the menu
-     */
     public static BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
-    /**
-     * Main method that runs the driver
-     * 
-     * @param args
-     * @throws IOException
-     */
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to the airport simulator!  Please enjoy your time!");
 
@@ -66,15 +57,13 @@ public class Driver {
     }
 
     /**
-     * Breaks out of the switch when case 9 is selected.
+     * Stops the switch statement if wantToQuit is set to true
      * 
      * @param command
      * @param planes
      * @param runways
      * @param info
-     * @return boolean
-     * true will break out of the switch
-     * 
+     * @return wantToQuit
      * @throws IOException
      */
     public static boolean processCommand(int command, AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBasedPlus<Integer> info) throws IOException {
@@ -121,7 +110,7 @@ public class Driver {
     }
 
     /**
-     * Adds a new plane to a specified runway.
+     * Creates a new plane with a unique flight number and adds it to a open runway
      * 
      * @param planes
      * @param runways
@@ -177,28 +166,49 @@ public class Driver {
         }
 
         Plane p = new Plane(fn, order, d);
-
-        int index = planes.search(p);
-
-        boolean sFlag = false;
-        for(int i = index; i < planes.size() && !sFlag; i++) {
-            if(p.getRunway() == planes.get(i).getRunway()){
-            }else{
-                planes.add(i, p);
-                p.setOrder(planes.get(i - 1).getOrder() + 1);
+        if(planes.isEmpty()){
+            planes.add(0, p);
+            p.setOrder(1);
+            System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+        }else {
+            int index = planes.search(p);
+            if (index >= planes.size()) {
+                index -= (2 * planes.size());
+                planes.add(index, p);
+                p.setOrder(1);
+                System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+            } else {
+                boolean sFlag = false;
+                for (int i = index; i < planes.size() && !sFlag; i++) {
+                    if (p.getRunway() == planes.get(i).getRunway()) {
+                    } else {
+                        planes.add(i, p);
+                        if (i == 0 || planes.get(i - 1).getOrder() == 0 || planes.get(i - 1).getRunway() != p.getRunway()) {
+                            p.setOrder(1);
+                        } else {
+                            p.setOrder(planes.get(i - 1).getOrder() + 1);
+                        }
+                        sFlag = true;
+                        System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+                    }
+                }
+                if(!sFlag){
+                    p.setOrder(planes.get(planes.size() - 1).getOrder() + 1);
+                    planes.add(planes.size(), p);
+                    System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
+                }
             }
         }
         int temp = info.get(4);
         info.remove(4);
         info.add(4, (temp + 1));
-        System.out.println("A plane with flight number: " + fn + " has entered runway: " + s);
     }
 
     /**
-     * Removes a plane from the AscendinglyOrderedList<Plane> planes if the plane has clearance to take off
-     * User will decide if the plane at the top top the list has clearance to take off
-     * If the plane doesn't have clearance to take off the plane is then sent to the hangar to await reentery of the runway
-     * 
+     * Removes a plane to act as if it has taken off from the airport
+     * The plane first needs a user input Y or N to determin whether or not it has clearance to take off
+     * If Y then the plane is removed from the open runway it is currently on
+     * If N then the plane is taken off the runway it is currently on and moved into the runway's hangar to await reentry to the runway
      * 
      * @param planes
      * @param runways
@@ -210,7 +220,7 @@ public class Driver {
             System.out.println("No plane on any runway!");
         }else {
             int index = planes.search(new Plane("", info.get(0), ""));
-            if (index < 0 || index >=ZZ planes.size() || !(runways.get(info.get(0))).getActive()) {
+            if (index < 0 || index >= planes.size() || !(runways.get(info.get(0))).getActive()) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
@@ -221,38 +231,43 @@ public class Driver {
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
                 index = planes.search(new Plane("", info.get(0), ""));
+                System.out.println("While 1" + index);
             }
-                Plane p = planes.get(index);
-                planes.remove(index);
-                System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
-                String s = stdin.readLine();
-                System.out.println(s);
-                p.setOrder(0);
-                if (s.equals("Y")) {
-                    System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
-                    int temp = info.get(1);
-                    info.remove(1);
-                    info.add(1, (temp + 1));
-                    p.setRunway(0);
-                    planes.add(p);
-                } else {
-                    System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
-                    int newIndex = planes.search(p);
-                    if (index > planes.size()) {
-                        newIndex -= (2 * planes.size());
-                    }
-                    int i = newIndex;
-                    while (i > 0 && planes.get(i).getRunway() == p.getRunway() && planes.get(i).getOrder() > 0) {
-                        i--;
-                    }
-                    planes.add(i, p);
-                    int temp = info.get(3);
-                    info.remove(3);
-                    info.add(3, (temp + 1));
+            Plane p = planes.get(index);
+            planes.remove(index);
+            System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
+            String s = stdin.readLine();
+            System.out.println(s);
+            p.setOrder(0);
+            if (s.equals("Y")) {
+                System.out.println("Flight " + p.getFlightNumber() + " has now taken off from runway " + runways.get(info.get(0)).getName());
+                int temp = info.get(1);
+                info.remove(1);
+                info.add(1, (temp + 1));
+                p.setRunway(0);
+                planes.add(0,p);
+            } else {
+                System.out.println("Flight " + p.getFlightNumber() + " is now waiting to be allowed to re-enter a runway.");
+                int newIndex = planes.search(p);
+                System.out.println("While 2" + newIndex);
+                if (newIndex >= planes.size()) {
+                    newIndex -= (2 * planes.size());
+                    newIndex--;
                 }
-                int temp = info.get(0);
-                info.remove(0);
-                info.add(0, (temp + 1) % runways.size());
+                System.out.println("While 2" + newIndex);
+
+                while (newIndex >= 0 && planes.get(newIndex).getRunway() == p.getRunway() && planes.get(newIndex).getOrder() != 0) {
+                    newIndex--;
+                    System.out.println("While 2" + newIndex);
+                }
+                planes.add(newIndex + 1, p);
+                int temp = info.get(3);
+                info.remove(3);
+                info.add(3, (temp + 1));
+            }
+            int temp = info.get(0);
+            info.remove(0);
+            info.add(0, (temp + 1) % runways.size());
             temp = info.get(4);
             info.remove(4);
             info.add(4, (temp - 1));
@@ -260,7 +275,7 @@ public class Driver {
     }
 
     /**
-     * Displays how many planes have take off at the airport
+     * Displays how many planes have taken off from the airport
      * 
      * @param info
      */
@@ -269,7 +284,7 @@ public class Driver {
     }
 
     /**
-     * Prints out any planes that are waiting to reenter a runway if they were denied take off clearance
+     * Displays the planes waiting to reenter runways
      * 
      * @param planes
      * @param runways
@@ -282,13 +297,13 @@ public class Driver {
             for (int i = 0; i < runways.size(); i++) {
                 if(runways.get(i).getActive()) {
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index <= planes.size()){
-                        while(planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
+                    if(index < planes.size()){
+                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder()){
                             index--;
                         }
                         boolean end = false;
                         while(!end){
-                            if(planes.get(index).getOrder() != 0 && planes.get(index).getRunway() == runways.get(i).getOrder()){
+                            if(index >= planes.size() || planes.get(index).getOrder() != 0 || planes.get(index).getRunway() != runways.get(i).getOrder()){
                                 end = true;
                             }else{
                                 System.out.println(planes.get(index));
@@ -302,7 +317,7 @@ public class Driver {
     }
 
     /**
-     * Allows a plane to reenter a runway if the plane was denied take off clearance earlier
+     * Allows a plane to reenter a runway after it was not given clearance to take off
      * 
      * @param planes
      * @param runways
@@ -335,7 +350,7 @@ public class Driver {
             Plane p = planes.get(index);
             planes.remove(index);
             int i = index;
-            while(i < runways.size() && planes.get(i).getRunway() != p.getRunway()) {
+            while(i < runways.size() && planes.get(i).getRunway() == p.getRunway()) {
                 i++;
             }
             planes.add(i, p);
@@ -348,8 +363,8 @@ public class Driver {
             String runway = "";
             boolean end = false;
             for(int j = 0; !end; j++){
-                if(runways.get(i).getOrder() == p.getRunway()){
-                    runway = runways.get(i).getName();
+                if(runways.get(j).getOrder() == p.getRunway()){
+                    runway = runways.get(j).getName();
                     end = true;
                 }
             }
@@ -361,45 +376,45 @@ public class Driver {
     }
 
     /**
-     * Adds a new runway to the airport with a unique name
-     * Will not be added if there is already a runway with the same name
+     * Opens a new runway with a unique name
+     * Will not add a new runway if there is a runway that exists with the same name
      * 
      * @param runways
      * @param info
      * @throws IOException
      */
     public static void runwayOpen(ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
-            System.out.println("Enter the name of the new runway you want to open: ");
-            String s = stdin.readLine();
+        System.out.println("Enter the name of the new runway you want to open: ");
+        String s = stdin.readLine();
+        System.out.println(s);
+        boolean exists = false;
+        for(int j = 0; j < runways.size() && !exists; j++){
+            if(runways.get(j).getName().equals(s)){
+                exists = true;
+            }
+        }
+        while (exists) {
+            System.out.println("That name is already used. Please enter a new name: ");
+            s = stdin.readLine();
             System.out.println(s);
-            boolean exists = false;
-            for(int j = 0; j < runways.size() && !exists; j++){
-                if(runways.get(j).getName().equals(s)){
+            exists = false;
+            for(int i = 0; i < runways.size() && !exists; i++){
+                if(runways.get(i).getName().equals(s)){
                     exists = true;
                 }
             }
-            while (exists) {
-                System.out.println("That name is already used. Please enter a new name: ");
-                s = stdin.readLine();
-                System.out.println(s);
-                exists = false;
-                for(int i = 0; i < runways.size() && !exists; i++){
-                    if(runways.get(i).getName().equals(s)){
-                        exists = true;
-                    }
-                }
-            }
-            runways.add(runways.size(), new Runway(s, runways.size() - 1));
-            System.out.println("Runway " + s + " is now open.");
+        }
+        runways.add(runways.size(), new Runway(s, runways.get(runways.size() - 1).getOrder() + 1));
+        System.out.println("Runway " + s + " is now open.");
         int temp = info.get(2);
         info.remove(2);
         info.add(2, temp + 1);
 }
 
     /**
-     * Removes a runway that is currently open.
-     * If there is a plane that is on the closing runway, that plane will need to be moved to another runway.
-     * If there are planes in the hangar waiting to take off on the runway that is closing, then those planes will need to be moved to another runway's hangar
+     * Closes an open runway at the airport
+     * If the runway that is closing has planes on it then those planes will be moved to a different runway with user input
+     * If the runway that is closing has planes in the hangar waiting for reentry then those planes will have to be moved to a different runway's hangar
      * 
      * @param planes
      * @param runways
@@ -520,7 +535,7 @@ public class Driver {
     }
 
     /**
-     * Prints out the planes that are waiting to take off from a runway
+     * Displays the planes that are waiting to take off from the airport
      * 
      * @param planes
      * @param runways
@@ -534,16 +549,18 @@ public class Driver {
                 if(runways.get(i).getActive()) {
                     System.out.println(runways.get(i));
                     int index = planes.search(new Plane("", runways.get(i).getOrder(), ""));
-                    if(index <= planes.size()){
-                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() != 0){
+                    if(index < planes.size()){
+                        while(index > 0 && planes.get(index - 1).getRunway() == runways.get(i).getOrder() && planes.get(index - 1).getOrder() > 0){
                             index--;
                         }
                         boolean end = false;
-                        while(!end){
+                        while(!end && index < planes.size()){
                             if(planes.get(index).getRunway() != runways.get(i).getOrder()){
                                 end = true;
-                            }else{
+                            }else if(planes.get(index).getOrder() != 0){
                                 System.out.println(planes.get(index));
+                                index++;
+                            }else{
                                 index++;
                             }
                         }
@@ -554,7 +571,7 @@ public class Driver {
     }
 
     /**
-     * Prints out the menu
+     * Prints out the menu options for the program
      */
     public static void printMenu() {
         System.out.println("Select from the following options: \n\t1. Plane enters the system.\n\t2. Plane takes off.\n\t3. Plane is allowed to re-enter a runway.\n\t4. Runway opens.\n\t5. Runway closes.\n\t6. Display info about planes waiting to take off.\n\t7. Display info about planes waiting to be allowed to re-enter a runway.\n\t8. Display number of planes who have taken off.\n\t9. End the program.");
