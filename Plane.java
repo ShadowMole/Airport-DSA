@@ -1,10 +1,10 @@
-	/**
-     * The plane sets the flightnumber, runway, and destination of each plane object that is added to the planes list in the driver
-     */
+/**
+ * Plane class that has a plane's flightnumber, runway, destination, and order
+ */
 public class Plane implements Comparable<Plane>{
 
     /**
-     * Field declaration of the String flightnumber
+     * Field declaration of String flightnumber
      */
     private String flightnumber;
     /**
@@ -12,7 +12,7 @@ public class Plane implements Comparable<Plane>{
      */
     private int runway;
     /**
-     * Field declaration of the String destination
+     * Field declaration of String destination
      */
     private String destination;
     /**
@@ -21,11 +21,11 @@ public class Plane implements Comparable<Plane>{
     private int order;
 
     /**
-     * Class constructor that takes in 3 parameters. It also initializes flightnumer to the f parameter, runway to the r parameter, and destination to the d parameter
+     * Class constructor that initializes flight number to the f parameter, runway to the r parameter, and destination to the d parameter
      * 
-     * @param f flight number
-     * @param r ruwnay name
-     * @param d destination name
+     * @param f
+     * @param r
+     * @param d
      */
     public Plane(String f, int r, String d){
         flightnumber = f;
@@ -44,6 +44,7 @@ public class Plane implements Comparable<Plane>{
 
     /**
      * Setter for the runway data field
+     * 
      * @param runway
      */
     public void setRunway(int runway) {
@@ -53,7 +54,7 @@ public class Plane implements Comparable<Plane>{
     /**
      * Getter for the flightnumber data field
      * 
-     * @return
+     * @return flightnumber
      */
     public String getFlightNumber() {
 
@@ -88,7 +89,7 @@ public class Plane implements Comparable<Plane>{
     /**
      * Getter for the destination data field
      * 
-     * @return
+     * @return destination
      */
     public String getDestination(){
         return destination;
@@ -111,20 +112,31 @@ public class Plane implements Comparable<Plane>{
         return p.getRunway() - runway;
     }
 
-    /**
-     * Checks to see if the runway data field matches to the runway the plane is assigned
-     * 
-     * @param p
-     * @return boolean
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
-    public boolean equals(Plane p){
-        return runway == p.getRunway();
+    @Override
+    public boolean equals(Object o){
+        if(o == this){
+            return true;
+        }
+
+        if(!(o instanceof Plane)){
+            return false;
+        }
+
+        Plane p = (Plane) o;
+        if(runway == p.getRunway()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
      * Getter for the order data field
      * 
-     * @return
+     * @return order
      */
     public int getOrder() {
         return order;
