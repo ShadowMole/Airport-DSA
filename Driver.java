@@ -13,7 +13,7 @@ public class Driver {
         AscendinglyOrderedList<Plane> planes = new AscendinglyOrderedList<>();
         ListArrayBasedPlus<Runway> runways = new ListArrayBasedPlus<>();
         ListArrayBasedPlus<Integer> info = new ListArrayBasedPlus<>(); //Will be used to hold other information
-        info.add(0, 1); //Current runway to take off from
+        info.add(0, 0); //Current runway to take off from
         info.add(1, 0); //Number of planes that have taken off
         info.add(2, 0); //Number of open runways
         info.add(3, 0); //Number of planes waiting to reenter runways
@@ -191,19 +191,31 @@ public class Driver {
             System.out.println("No plane on any runway!");
         }else {
             int index = planes.search(new Plane("", info.get(0), ""));
-            if (index < 0 || index >= planes.size() || !(runways.get(info.get(0))).getActive()) {
+            int pos = index;
+            while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
+                pos--;
+            }
+            if (!(runways.get(info.get(0)).getActive()) || pos < 0 || pos >= planes.size() || planes.get(pos).getRunway() != info.get(0)) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
                 index = planes.search(new Plane("", info.get(0), ""));
             }
-            while (index < 0 || index >= planes.size() || !(runways.get(info.get(0))).getActive()) {
+            while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
+                pos--;
+            }
+            while (!(runways.get(info.get(0)).getActive()) || pos < 0 || pos >= planes.size() || planes.get(pos).getRunway() != info.get(0)) {
                 int temp = info.get(0);
                 info.remove(0);
                 info.add(0, (temp + 1) % runways.size());
                 index = planes.search(new Plane("", info.get(0), ""));
-                System.out.println("While 1" + index);
+                pos = index;
+                while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
+                    pos--;
+                }
+                System.out.println("While 1 " + pos + " " + index);
             }
+            index = pos;
             Plane p = planes.get(index);
             planes.remove(index);
             System.out.println("Is Flight " + p.getFlightNumber() + " cleared for take off? (Y/N)");
@@ -289,7 +301,7 @@ public class Driver {
                 }
             }
             while (index == -1) {
-                System.out.println("That flight number is not waiting. Please enter a new flight number: ");
+                System.out.println("That flight is not waiting for reentry. Please enter a new flight number: ");
                 fn = stdin.readLine();
                 System.out.println(fn);
                 for(int i = 0; i < planes.size(); i++){
@@ -301,7 +313,7 @@ public class Driver {
             Plane p = planes.get(index);
             planes.remove(index);
             int i = index;
-            while(i < runways.size() && planes.get(i).getRunway() == p.getRunway()) {
+            while(i < planes.size() && planes.get(i).getRunway() == p.getRunway()) {
                 i++;
             }
             planes.add(i, p);
@@ -357,12 +369,23 @@ public class Driver {
     public static void runwayClose(AscendinglyOrderedList<Plane> planes, ListArrayBasedPlus<Runway> runways, ListArrayBased<Integer> info) throws IOException {
         if (info.get(2) == 0) {
                 System.out.println("There are no open runways at the airport.");
-            } else {
-                System.out.println("Enter the name of the runway you want to close: ");
-                String r = stdin.readLine();
+        } else {
+            System.out.println("Enter the name of the runway you want to close: ");
+            String r = stdin.readLine();
+            System.out.println(r);
+            boolean found = false;
+            int run = -1;
+            for (int i = 0; i < runways.size() && !found; i++) {
+                if (runways.get(i).getName().equals(r)) {
+                    found = true;
+                    run = runways.get(i).getOrder();
+                    runways.get(i).setInactive();
+                }
+            }
+            while (!found) {
+                System.out.println("There is no runway by that name at the airport. Please enter a new name: ");
+                r = stdin.readLine();
                 System.out.println(r);
-                boolean found = false;
-                int run = -1;
                 for (int i = 0; i < runways.size() && !found; i++) {
                     if (runways.get(i).getName().equals(r)) {
                         found = true;
@@ -370,20 +393,12 @@ public class Driver {
                         runways.get(i).setInactive();
                     }
                 }
-                while (!found) {
-                    System.out.println("There is no runway by that name at the airport. Please enter a new name: ");
-                    r = stdin.readLine();
-                    System.out.println(r);
-                    for (int i = 0; i < runways.size() && !found; i++) {
-                        if (runways.get(i).getName().equals(r)) {
-                            found = true;
-                            run = runways.get(i).getOrder();
-                            runways.get(i).setInactive();
-                        }
-                    }
-                }
+            }
+            System.out.println(planes);
+            System.out.println(run);
             int index = planes.search(new Plane("", run, ""));
-            if(index <= planes.size()){
+            System.out.println(index);
+            if(index < planes.size()){
                 boolean beginning = false;
                 while(!beginning){
                     if(planes.get(index - 1).getRunway() !=  run){
@@ -400,7 +415,7 @@ public class Driver {
                         Plane p = planes.get(index);
                         planes.remove(index);
                         int newIndex = -1;
-                        System.out.println("Enter the name of the runway you want to close: ");
+                        System.out.println("Enter the name of the runway that flight " + p + " should be transferred to: ");
                         String n = stdin.readLine();
                         System.out.println(n);
                         boolean sfound = false;
