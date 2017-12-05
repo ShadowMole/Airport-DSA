@@ -68,7 +68,7 @@ public class AscendinglyOrderedList <T extends Comparable<T>> implements Ascendi
             }else if(low > high){
                 index = low;
                 end = true;
-            }else if(item.compareTo(items[mid]) < 0){
+            }else if(item.compareTo(items[mid]) > 0){
                 high = mid - 1;
             }else{
                 low = mid + 1;

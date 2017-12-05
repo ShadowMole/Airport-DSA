@@ -13,7 +13,7 @@ public class Driver {
         AscendinglyOrderedList<Plane> planes = new AscendinglyOrderedList<>();
         ListArrayBasedPlus<Runway> runways = new ListArrayBasedPlus<>();
         ListArrayBasedPlus<Integer> info = new ListArrayBasedPlus<>(); //Will be used to hold other information
-        info.add(0, 0); //Current runway to take off from
+        info.add(0, 1); //Current runway to take off from
         info.add(1, 0); //Number of planes that have taken off
         info.add(2, 0); //Number of open runways
         info.add(3, 0); //Number of planes waiting to reenter runways
@@ -191,23 +191,31 @@ public class Driver {
             System.out.println("No plane on any runway!");
         }else {
             int index = planes.search(new Plane("", info.get(0), ""));
-            int pos = index;
+            int pos = index; //pos is short for position
             while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
-                pos--;
+                    pos--;
             }
             if (!(runways.get(info.get(0)).getActive()) || pos < 0 || pos >= planes.size() || planes.get(pos).getRunway() != info.get(0)) {
                 int temp = info.get(0);
                 info.remove(0);
-                info.add(0, (temp + 1) % runways.size());
+                temp++;
+                if(temp == runways.size()){
+                    temp = 1;
+                }
+                info.add(0, temp);
                 index = planes.search(new Plane("", info.get(0), ""));
-            }
-            while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
-                pos--;
+                while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
+                    pos--;
+                }
             }
             while (!(runways.get(info.get(0)).getActive()) || pos < 0 || pos >= planes.size() || planes.get(pos).getRunway() != info.get(0)) {
                 int temp = info.get(0);
                 info.remove(0);
-                info.add(0, (temp + 1) % runways.size());
+                temp++;
+                if(temp == runways.size()){
+                    temp = 1;
+                }
+                info.add(0, temp);
                 index = planes.search(new Plane("", info.get(0), ""));
                 pos = index;
                 while(pos > 0 && pos < planes.size() && planes.get(pos - 1).getRunway() == runways.get(info.get(0)).getOrder() && planes.get(pos - 1).getOrder() != 0){
@@ -250,7 +258,11 @@ public class Driver {
             }
             int temp = info.get(0);
             info.remove(0);
-            info.add(0, (temp + 1) % runways.size());
+            temp++;
+            if(temp == runways.size()){
+                temp = 1;
+            }
+            info.add(0, temp);
             temp = info.get(4);
             info.remove(4);
             info.add(4, (temp - 1));
